@@ -1,47 +1,45 @@
-// inputNode.js
+import { Position } from "reactflow";
+import NodeWrapper from "./nodeWrapper";
+import { Icons } from "./nodeIcons";
+import { useStore } from "../store.js";
+import { shallow } from "zustand/shallow";
 
-import { useState } from 'react';
-import { Handle, Position } from 'reactflow';
+const selector = (id) => (store) => ({
+  setCurrName: (e) => store.updateNodeField(id, "inputName", e.target.value),
+  setInputType: (e) => store.updateNodeField(id, "inputType", e.target.value),
+});
 
 export const InputNode = ({ id, data }) => {
-  const [currName, setCurrName] = useState(data?.inputName || id.replace('customInput-', 'input_'));
-  const [inputType, setInputType] = useState(data.inputType || 'Text');
+  const { setCurrName, setInputType } = useStore(selector(id), shallow);
 
-  const handleNameChange = (e) => {
-    setCurrName(e.target.value);
-  };
-
-  const handleTypeChange = (e) => {
-    setInputType(e.target.value);
-  };
+  const handles = [
+    { type: "source", position: Position.Right, id: `${id}-value` },
+  ];
 
   return (
-    <div style={{width: 200, height: 80, border: '1px solid black'}}>
+    <NodeWrapper
+      id={id}
+      handles={handles}
+      name={"Input"}
+      icon={Icons.customInput}
+    >
       <div>
-        <span>Input</span>
+        <label htmlFor="name">Name:</label>
+        <input
+          value={data.inputName}
+          id="name"
+          type="text"
+          onChange={setCurrName}
+        />
       </div>
+
       <div>
-        <label>
-          Name:
-          <input 
-            type="text" 
-            value={currName} 
-            onChange={handleNameChange} 
-          />
-        </label>
-        <label>
-          Type:
-          <select value={inputType} onChange={handleTypeChange}>
-            <option value="Text">Text</option>
-            <option value="File">File</option>
-          </select>
-        </label>
+        <label htmlFor="comp">Type:</label>
+        <select value={data.inputType} onChange={setInputType} id="comp">
+          <option value="Text">Text</option>
+          <option value="File">File</option>
+        </select>
       </div>
-      <Handle
-        type="source"
-        position={Position.Right}
-        id={`${id}-value`}
-      />
-    </div>
+    </NodeWrapper>
   );
-}
+};

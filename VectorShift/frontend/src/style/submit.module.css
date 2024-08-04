@@ -1,0 +1,26 @@
+button {
+  font-size: 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  padding: 0.75rem 1.25rem;
+  background-color: var(--color-primary);
+  color: white;
+  border-color: transparent;
+
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: var(--color-secondary);
+}
+
+button:focus {
+  outline: none;
+  border-color: transparent;
+}
+
+.container { 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

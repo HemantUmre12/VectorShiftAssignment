@@ -1,47 +1,45 @@
-// outputNode.js
+import { Position } from "reactflow";
+import NodeWrapper from "./nodeWrapper";
+import { Icons } from "./nodeIcons";
+import { useStore } from "../store.js";
+import { shallow } from "zustand/shallow";
 
-import { useState } from 'react';
-import { Handle, Position } from 'reactflow';
+const selector = (id) => (store) => ({
+  setCurrName: (e) => store.updateNodeField(id, "outputName", e.target.value),
+  setOutputType: (e) => store.updateNodeField(id, "outputType", e.target.value),
+});
 
 export const OutputNode = ({ id, data }) => {
-  const [currName, setCurrName] = useState(data?.outputName || id.replace('customOutput-', 'output_'));
-  const [outputType, setOutputType] = useState(data.outputType || 'Text');
+  const { setCurrName, setOutputType } = useStore(selector(id), shallow);
 
-  const handleNameChange = (e) => {
-    setCurrName(e.target.value);
-  };
-
-  const handleTypeChange = (e) => {
-    setOutputType(e.target.value);
-  };
+  const handles = [
+    { type: "target", position: Position.Left, id: `${id}-value` },
+  ];
 
   return (
-    <div style={{width: 200, height: 80, border: '1px solid black'}}>
-      <Handle
-        type="target"
-        position={Position.Left}
-        id={`${id}-value`}
-      />
+    <NodeWrapper
+      id={id}
+      handles={handles}
+      name={"Output"}
+      icon={Icons.customOutput}
+    >
       <div>
-        <span>Output</span>
+        <label htmlFor="name">Name:</label>
+        <input
+          value={data.outputName}
+          id="name"
+          type="text"
+          onChange={setCurrName}
+        />
       </div>
+
       <div>
-        <label>
-          Name:
-          <input 
-            type="text" 
-            value={currName} 
-            onChange={handleNameChange} 
-          />
-        </label>
-        <label>
-          Type:
-          <select value={outputType} onChange={handleTypeChange}>
-            <option value="Text">Text</option>
-            <option value="File">Image</option>
-          </select>
-        </label>
+        <label htmlFor="comp">Type:</label>
+        <select value={data.outputType} onChange={setOutputType} id="comp">
+          <option value="Text">Text</option>
+          <option value="File">File</option>
+        </select>
       </div>
-    </div>
+    </NodeWrapper>
   );
-}
+};
